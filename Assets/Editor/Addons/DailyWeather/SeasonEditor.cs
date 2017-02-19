@@ -76,12 +76,7 @@ namespace DailyWeather
                     {
                         property.serializedObject.ApplyModifiedProperties();
                         
-                        Debug.Log("Added");
-                    }
-                    else
-                    {
-                        Debug.Log("Not Added");
-                    }
+                     }
                 }
                 showingWeather = false;
             }
@@ -104,8 +99,18 @@ namespace DailyWeather
 
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
         {
-            
-            return 2 * 22 + property.FindPropertyRelative("seasonTransitions").arraySize * 22 + (showingWeather ? 22 : 24) ;
+            if (showingWeather)
+            {
+                DailyWeather dw = (DailyWeather)property.serializedObject.targetObject;
+                Seasons seasonType = (Seasons)property.FindPropertyRelative("seasonType").enumValueIndex;
+                int weathes = dw.GetSeason(seasonType).WeatherCount;
+                return 2 * 22 + property.FindPropertyRelative("seasonTransitions").arraySize * 22 + 44 + 22 * weathes;
+
+            }
+            else
+            {
+                return 2 * 22 + property.FindPropertyRelative("seasonTransitions").arraySize * 22 + 24;
+            }
         }
     }
 }

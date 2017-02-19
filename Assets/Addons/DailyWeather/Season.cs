@@ -28,6 +28,14 @@ namespace DailyWeather
         [System.NonSerialized]
         DailyWeather dailyWeather;
 
+        public int WeatherCount
+        {
+            get
+            {
+                return weathers.Count;
+            }
+        }
+
         public void SetParentWeather(DailyWeather weather)
         {
             dailyWeather = weather;

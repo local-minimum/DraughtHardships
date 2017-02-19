@@ -17,7 +17,7 @@ namespace DailyWeather
         public Seasons seasonType;
 
         [SerializeField]
-        List<Season> seasonTransitions = new List<Season>();
+        List<Seasons> seasonTransitions = new List<Seasons>();
 
         [SerializeField]
         List<AnimationCurve> seasonTransitionProbabilities = new List<AnimationCurve>();
@@ -25,17 +25,33 @@ namespace DailyWeather
         [SerializeField]
         List<Weather> weathers = new List<Weather>();
 
+        [System.NonSerialized]
+        DailyWeather dailyWeather;
+
+        public void SetParentWeather(DailyWeather weather)
+        {
+            dailyWeather = weather;
+        }
+
+        public void SetWeatherParents()
+        {
+            for (int i = 0, l = weathers.Count; i < l; i++)
+            {
+                weathers[i].SetParentSeason(this);
+            }
+        }
+
         public Season(Seasons seasonType)
         {
             this.seasonType = seasonType;
             name = System.Enum.GetName(typeof(Seasons), seasonType);
             seasonTransitionProbabilities.Add(new AnimationCurve());
-            seasonTransitions.Add(this);
+            seasonTransitions.Add(seasonType);
         }
 
         public void AddSeason(Season season)
         {
-            seasonTransitions.Add(season);
+            seasonTransitions.Add(season.seasonType);
             seasonTransitionProbabilities.Add(new AnimationCurve());
         }
 
@@ -51,18 +67,40 @@ namespace DailyWeather
             }
 
             Weather w = new Weather(this, weatherType);
+            weathers.Add(w);
             for (int i = 0; i < l; i++)
             {
                 weathers[i].AddWeather(w);
                 w.AddWeather(weathers[i]);
             }
 
-            return false;
+            return true;
         }
 
         public Season GetSeasonTransition(float yearProgress)
         {
-            return seasonTransitions[0];
+            int l = seasonTransitions.Count;
+            float pTot = 0;
+            float[] pVector = new float[l];
+
+            for (int i = 0; i < l; i++)
+            {
+                pVector[i] = seasonTransitionProbabilities[i].Evaluate(yearProgress);
+                pTot += pVector[i];
+            }
+
+            float p = Random.value * pTot;
+            pTot = 0;
+
+            for (int i = 0; i < l; i++)
+            {
+                pTot += pVector[i];
+                if (p < pTot)
+                {
+                    return dailyWeather.GetSeason(seasonTransitions[i]);
+                }
+            }
+            return dailyWeather.GetSeason(seasonTransitions[0]);
         }
 
         public float GetInitProbability(float yearProgress)
@@ -79,6 +117,31 @@ namespace DailyWeather
             }
 
             return weather.GetWeatherTransition(yearProgress);
+        }
+
+        public bool HasWeather(Weathers weatherType)
+        {
+            for (int i = 0, l = weathers.Count; i < l; i++)
+            {
+                if (weathers[i].weatherType == weatherType)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public Weather GetWeather(Weathers weatherType)
+        {
+            for (int i=0, l=weathers.Count; i<l; i++)
+            {
+                if (weathers[i].weatherType == weatherType)
+                {
+                    return weathers[i];
+                }
+            }
+
+            return null;
         }
 
         Weather GetMyWeatherClone(Weather previousWeather)

@@ -22,8 +22,13 @@ namespace DailyWeather
         [HideInInspector]
         public Weathers weatherType;
 
-        [SerializeField]
-        Season season;
+        [System.NonSerialized]
+        private Season season;
+
+        public void SetParentSeason(Season season)
+        {
+            this.season = season;
+        }
 
         public AnimationCurve anualTemperatureModification;
 
@@ -31,20 +36,19 @@ namespace DailyWeather
         List<AnimationCurve> weatherTransitions = new List<AnimationCurve>();
 
         [SerializeField]
-        List<Weather> weathers = new List<Weather>();
+        List<Weathers> weathers = new List<Weathers>();
 
         public Weather(Season season, Weathers weatherType)
         {
-            this.season = season;
             this.weatherType = weatherType;
             name = System.Enum.GetName(typeof(Weathers), weatherType);
             weatherTransitions.Add(new AnimationCurve());
-            weathers.Add(this);
+            weathers.Add(weatherType);
         }
 
         public void AddWeather(Weather weather)
         {
-            weathers.Add(weather);
+            weathers.Add(weather.weatherType);
             weatherTransitions.Add(new AnimationCurve());
         }
 
@@ -77,11 +81,11 @@ namespace DailyWeather
                 pTot += pVector[i];
                 if (v < pTot)
                 {
-                    return weathers[i];
+                    return season.GetWeather(weathers[i]);
                 }
             }
 
-            return weathers[l - 1];
+            return season.GetWeather(weathers[l - 1]);
 
         }
     }

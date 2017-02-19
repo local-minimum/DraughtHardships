@@ -20,7 +20,7 @@ namespace DailyWeather {
 
             EditorGUILayout.BeginHorizontal();
 
-            EditorGUILayout.LabelField("Seasons");
+            EditorGUILayout.LabelField("Season:", GUILayout.Width(75));
 
             season = (Seasons)EditorGUILayout.EnumPopup(season);
 
@@ -28,9 +28,14 @@ namespace DailyWeather {
 
             EditorGUILayout.EndHorizontal();
 
+            EditorGUI.BeginChangeCheck();
+
             if (dw.HasSeason(season))
             {
+                EditorGUI.indentLevel += 1;
                 ShowEditSeason();
+                EditorGUI.indentLevel -= 1;
+
             } else
             {
                 if (AddSeason(dw))
@@ -39,6 +44,10 @@ namespace DailyWeather {
                 }
             }
 
+            if (EditorGUI.EndChangeCheck())
+            {
+                serializedObject.ApplyModifiedPropertiesWithoutUndo();
+            }
         }
 
         void ShowEditSeason() {
@@ -53,7 +62,7 @@ namespace DailyWeather {
                 {
                     if (EditorGUILayout.PropertyField(seasonProp))
                     {
-                        serializedObject.ApplyModifiedProperties();
+                        
                     }
                 }
             }

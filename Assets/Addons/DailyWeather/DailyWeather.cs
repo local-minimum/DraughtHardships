@@ -120,8 +120,32 @@ namespace DailyWeather
                     _instance, this
                     ));
                 Destroy(this);
+                return;
             }
+
+            SetWeatherSystem();
             currentSeason = GetInitSeason();
+        }
+
+        void SetWeatherSystem()
+        {
+            for (int i=0, l=seasons.Count; i<l; i++)
+            {
+                seasons[i].SetParentWeather(this);
+                seasons[i].SetWeatherParents();
+            }
+        }
+
+        public Season GetSeason(Seasons seasonType)
+        {
+            for (int i = 0, l = seasons.Count; i < l; i++)
+            {
+                if (seasons[i].seasonType == seasonType)
+                {
+                    return seasons[i];
+                }
+            }
+            return null;
         }
 
         Season GetInitSeason()

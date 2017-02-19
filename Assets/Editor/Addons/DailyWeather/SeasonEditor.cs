@@ -57,8 +57,10 @@ namespace DailyWeather
 
                 if (wProp.FindPropertyRelative("weatherType").enumValueIndex == (int) currentWeather)
                 {
+                    EditorGUI.indentLevel++;
                     EditorGUI.PropertyField(position, wProp);
                     showingWeather = true;
+                    EditorGUI.indentLevel--;
                     break;
                 }
                     

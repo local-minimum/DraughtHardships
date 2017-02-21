@@ -34,18 +34,21 @@ namespace DailyWeather
         List<Season> seasons = new List<Season>();
 
         [SerializeField]
-        float gameTimePerDay = 5;
+        float reportInterval;
+
+        float nextReport;
+        
+        [SerializeField]
+        int startYear;
 
         [SerializeField]
-        int daysPerYear = 365;
+        int daysPerYear = 356;
 
-        int dayOfYear;
-
-        [SerializeField]
-        int year;
+        [SerializeField, Range(0, 1)]
+        float yearProgressionAtStart;
 
         [SerializeField]
-        int startDayOfYear;
+        float yearInRealTime = 60;
 
         [SerializeField]
         bool debugLogWeathers;
@@ -59,7 +62,7 @@ namespace DailyWeather
         {
             get
             {
-                return dayOfYear / (float)daysPerYear;
+                return (Time.timeSinceLevelLoad/yearInRealTime + yearProgressionAtStart) % 1f;
             }
         }
 
@@ -67,26 +70,31 @@ namespace DailyWeather
         {
             get
             {
-                return dayOfYear;
+                return Mathf.FloorToInt(YearProgress * daysPerYear) + 1;
             }
         }
 
-        int CalculateDayOfYear()
+        public int Year
         {
-            return (Mathf.FloorToInt(Time.timeSinceLevelLoad / gameTimePerDay) + startDayOfYear) % daysPerYear;
+            get
+            {
+                return Mathf.FloorToInt(Time.timeSinceLevelLoad / yearInRealTime + yearProgressionAtStart);
+            }
         }
 
         public void EmitDailyWeatherReport()
         {
             float yearProgress = YearProgress;
             currentSeason = currentSeason.GetSeasonTransition(yearProgress);
+            //Debug.Log(currentSeason.name);
             currentWeather = currentSeason.GetWeatherTransition(currentWeather, yearProgress);
+            //Debug.Log(currentWeather.name);
             float temp = GetTemperature(yearProgress);
 
             if (OnWeatherReport != null)
             {
                 OnWeatherReport(
-                    dayOfYear,
+                    DayOfYear,
                     currentSeason.seasonType,
                     currentWeather.weatherType,
                     temp
@@ -96,7 +104,7 @@ namespace DailyWeather
             if (debugLogWeathers)
             {
                 Debug.Log(string.Format("Y {0}, d {1}: {2}, {3} ({4} C)",
-                    year, dayOfYear, currentSeason.seasonType,
+                    Year, DayOfYear, currentSeason.seasonType,
                     currentWeather.weatherType, temp));
             }
         }
@@ -185,10 +193,9 @@ namespace DailyWeather
 
         private void Update()
         {
-            int calcDay = CalculateDayOfYear();
-            if (calcDay != dayOfYear)
+            if (Time.timeSinceLevelLoad > nextReport)
             {
-                dayOfYear = calcDay;
+                nextReport = Mathf.Max(nextReport + reportInterval, Time.timeSinceLevelLoad);
                 EmitDailyWeatherReport();
             }
         }

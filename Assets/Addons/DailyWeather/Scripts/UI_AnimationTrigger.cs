@@ -27,6 +27,8 @@ namespace DailyWeather
 
         DailyWeather dw;
 
+        SmoothSeasons ss;
+
         private void Start()
         {
             anim = GetComponent<Animator>();
@@ -40,11 +42,29 @@ namespace DailyWeather
         {
             dw = DailyWeather.instance;
             dw.OnWeatherReport += Instance_OnWeatherReport;
+
+            ss = SmoothSeasons.instance;
+            if (ss)
+            {
+                ss.OnNewSeason += Ss_OnNewSeason;
+            }
+        }
+
+        private void Ss_OnNewSeason(Seasons fromSeason, Seasons toSeason)
+        {
+            if (seasonText)
+            {
+                seasonText.text = System.Enum.GetName(typeof(Seasons), toSeason);
+            }
         }
 
         private void OnDisable()
         {
             dw.OnWeatherReport -= Instance_OnWeatherReport;
+            if (ss)
+            {
+                ss.OnNewSeason -= Ss_OnNewSeason;
+            }
         }
 
         private void Instance_OnWeatherReport(int dayOfYear, Seasons season, Weathers weather, float temperature)
@@ -55,7 +75,7 @@ namespace DailyWeather
             {
                 temperatureText.text = string.Format(tempPattern, temperature);
             }
-            if (seasonText)
+            if (seasonText && ss == null)
             {
                 seasonText.text = System.Enum.GetName(typeof(Seasons), season);
             }

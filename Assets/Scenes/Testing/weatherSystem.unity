@@ -101,6 +101,7 @@ GameObject:
   - component: {fileID: 77779681}
   - component: {fileID: 77779682}
   - component: {fileID: 77779683}
+  - component: {fileID: 77779684}
   m_Layer: 5
   m_Name: WeatherPanel
   m_TagString: Untagged
@@ -160,6 +161,33 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
+--- !u!114 &77779684
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 77779680}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b18be0fbe79cf344af791863c774c13, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  seasonText: {fileID: 482578563}
+  temperatureText: {fileID: 667554006}
+  tempPattern: "Temp: {0:0.0} \xB0C"
+  disactivationTrigger: no_report
+  triggers:
+  - sunny
+  - scatterClouds
+  - cloudy
+  - overcast
+  - drizzle
+  - rainShowers
+  - raining
+  - thunderstorm
+  - shit
+  - snowing
+  - foggy
 --- !u!1 &424312312
 GameObject:
   m_ObjectHideFlags: 0
@@ -1036,7 +1064,7 @@ MonoBehaviour:
   daysPerYear: 365
   yearProgressionAtStart: 0
   yearInRealTime: 60
-  debugLogWeathers: 1
+  debugLogWeathers: 0
   annualMeanTemperature:
     serializedVersion: 2
     m_Curve:

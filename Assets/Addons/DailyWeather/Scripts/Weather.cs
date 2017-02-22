@@ -8,7 +8,7 @@ namespace DailyWeather
     public enum Weathers
     {
         Sunny, ScatteredClouds, Cloudy, Overcast, Drizzle, RainShowers,
-        Raining, Thunderstorm, Shit, Snowing
+        Raining, Thunderstorm, Shit, Snowing, Foggy
     };
 
 

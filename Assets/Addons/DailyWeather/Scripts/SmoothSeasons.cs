@@ -94,8 +94,7 @@ namespace DailyWeather
 
         Seasons CalculateCurrent()
         {
-            Dictionary<Seasons, int> counts = new Dictionary<Seasons, int>();
-            Seasons old = current;
+            Dictionary<Seasons, int> counts = new Dictionary<Seasons, int>();            
 
             for (int i =0; i<buffer.Length; i++)
             {
